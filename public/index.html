@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IELTS So'z Yodlash</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <header>
+            <h1>IELTS So'z Yodlash</h1>
+            <nav>
+                <button class="nav-btn active" data-page="words">So'zlar</button>
+                <button class="nav-btn" data-page="add">Yangi so'z</button>
+                <button class="nav-btn" data-page="practice">Mashq</button>
+            </nav>
+        </header>
+
+        <!-- So'zlar ro'yxati -->
+        <section id="words-page" class="page active">
+            <div class="filters-bar">
+                <input type="text" id="search-input" placeholder="So'z qidirish...">
+                <select id="filter-topic"><option value="">Barcha topiclar</option></select>
+                <select id="filter-tag">
+                    <option value="">Barcha taglar</option>
+                    <option value="speaking">Speaking</option>
+                    <option value="listening">Listening</option>
+                    <option value="reading">Reading</option>
+                    <option value="writing">Writing</option>
+                </select>
+                <select id="filter-sort">
+                    <option value="newest">Yangi qo'shilgan</option>
+                    <option value="oldest">Eski qo'shilgan</option>
+                    <option value="az">A → Z</option>
+                    <option value="za">Z → A</option>
+                    <option value="score_high">Baho: yuqoridan</option>
+                    <option value="score_low">Baho: pastdan</option>
+                </select>
+                <span class="word-count" id="word-count"></span>
+            </div>
+            <div id="words-list" class="words-grid"></div>
+            <div id="empty-state" class="empty-state" style="display:none;">
+                <p>So'z topilmadi</p>
+            </div>
+            <div id="pagination" class="pagination"></div>
+        </section>
+
+        <!-- Yangi so'z qo'shish -->
+        <section id="add-page" class="page">
+            <form id="word-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="english">Inglizcha so'z *</label>
+                        <input type="text" id="english" required placeholder="masalan: abundant" autocomplete="off">
+                        <div id="english-check" class="input-hint"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="uzbek">O'zbekcha tarjima *</label>
+                        <input type="text" id="uzbek" required placeholder="masalan: mo'l-ko'l, serob">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="synonyms">Sinonimlar</label>
+                    <input type="text" id="synonyms" placeholder="masalan: plentiful, ample, copious">
+                </div>
+                <div class="form-group">
+                    <label for="example">Misol jumla</label>
+                    <textarea id="example" rows="3" placeholder="masalan: The region has abundant natural resources."></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="topic">Topic</label>
+                        <input type="text" id="topic" placeholder="masalan: Education" list="topic-list">
+                        <datalist id="topic-list"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label>IELTS Skills (taglar)</label>
+                        <div class="tags-checkboxes">
+                            <label class="tag-check"><input type="checkbox" name="tags" value="speaking"> Speaking</label>
+                            <label class="tag-check"><input type="checkbox" name="tags" value="listening"> Listening</label>
+                            <label class="tag-check"><input type="checkbox" name="tags" value="reading"> Reading</label>
+                            <label class="tag-check"><input type="checkbox" name="tags" value="writing"> Writing</label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">Saqlash</button>
+            </form>
+        </section>
+
+        <!-- Mashq rejimi -->
+        <section id="practice-page" class="page">
+            <div id="practice-empty" class="empty-state">
+                <p>Mashq qilish uchun kamida 1 ta so'z qo'shing</p>
+            </div>
+            <div id="practice-area" class="practice-area" style="display:none;">
+                <div class="practice-header">
+                    <span id="practice-progress"></span>
+                    <div class="practice-modes">
+                        <button class="mode-btn active" data-mode="en-uz">EN → UZ</button>
+                        <button class="mode-btn" data-mode="uz-en">UZ → EN</button>
+                    </div>
+                </div>
+                <div class="flashcard" id="flashcard">
+                    <div class="flashcard-inner" id="flashcard-inner">
+                        <div class="flashcard-front">
+                            <p class="card-word" id="card-front-word"></p>
+                            <span class="card-hint">Kartani bosing</span>
+                        </div>
+                        <div class="flashcard-back">
+                            <p class="card-word" id="card-back-word"></p>
+                            <p class="card-synonyms" id="card-synonyms"></p>
+                            <p class="card-example" id="card-example"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="practice-actions">
+                    <button class="btn-know" id="btn-know">Bildim</button>
+                    <button class="btn-dont-know" id="btn-dont-know">Bilmadim</button>
+                </div>
+                <button class="btn-restart" id="btn-restart">Qaytadan boshlash</button>
+            </div>
+            <div id="practice-done" class="practice-done" style="display:none;">
+                <h2>Mashq tugadi!</h2>
+                <p id="practice-result"></p>
+                <button class="btn-primary" id="btn-practice-again">Qaytadan mashq</button>
+            </div>
+        </section>
+
+        <!-- Tahrirlash modal -->
+        <div id="edit-modal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <h2>So'zni tahrirlash</h2>
+                <form id="edit-form">
+                    <input type="hidden" id="edit-id">
+                    <div class="form-group">
+                        <label for="edit-english">Inglizcha so'z *</label>
+                        <input type="text" id="edit-english" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-uzbek">O'zbekcha tarjima *</label>
+                        <input type="text" id="edit-uzbek" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-synonyms">Sinonimlar</label>
+                        <input type="text" id="edit-synonyms">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-example">Misol jumla</label>
+                        <textarea id="edit-example" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-topic">Topic</label>
+                        <input type="text" id="edit-topic" list="topic-list">
+                    </div>
+                    <div class="form-group">
+                        <label>IELTS Skills (taglar)</label>
+                        <div class="tags-checkboxes" id="edit-tags-container">
+                            <label class="tag-check"><input type="checkbox" name="edit-tags" value="speaking"> Speaking</label>
+                            <label class="tag-check"><input type="checkbox" name="edit-tags" value="listening"> Listening</label>
+                            <label class="tag-check"><input type="checkbox" name="edit-tags" value="reading"> Reading</label>
+                            <label class="tag-check"><input type="checkbox" name="edit-tags" value="writing"> Writing</label>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-cancel" id="btn-cancel-edit">Bekor qilish</button>
+                        <button type="submit" class="btn-primary">Saqlash</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

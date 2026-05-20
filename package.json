@@ -1,0 +1,16 @@
+{
+  "name": "prepare_for_ielts",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.2.1",
+    "sql.js": "^1.14.1"
+  }
+}
