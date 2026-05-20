@@ -1,3 +1,31 @@
+// ========== THEME ==========
+const THEMES = ['ocean','emerald','purple','rose','sunset','midnight','light'];
+function setTheme(theme) {
+    if (!THEMES.includes(theme)) theme = 'ocean';
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('app_theme', theme);
+    document.querySelectorAll('.theme-option').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === theme);
+    });
+}
+// Apply saved theme immediately
+setTheme(localStorage.getItem('app_theme') || 'ocean');
+
+document.getElementById('btn-theme-toggle').addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('theme-dropdown').classList.toggle('open');
+});
+document.querySelectorAll('.theme-option').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setTheme(btn.dataset.theme);
+        document.getElementById('theme-dropdown').classList.remove('open');
+    });
+});
+document.addEventListener('click', () => {
+    document.getElementById('theme-dropdown').classList.remove('open');
+});
+
 // ========== AUTH ==========
 let authToken = localStorage.getItem('auth_token') || null;
 let currentUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
