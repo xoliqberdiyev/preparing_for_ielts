@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Auth sahifasi -->
+    <!-- Auth -->
     <div id="auth-page" class="auth-page">
         <div class="auth-container">
             <h1 class="auth-title">IELTS So'z Yodlash</h1>
@@ -16,25 +16,13 @@
                 <button class="auth-tab" data-tab="register">Ro'yxatdan o'tish</button>
             </div>
             <form id="login-form" class="auth-form">
-                <div class="form-group">
-                    <label for="login-username">Username</label>
-                    <input type="text" id="login-username" required placeholder="username" autocomplete="username">
-                </div>
-                <div class="form-group">
-                    <label for="login-password">Parol</label>
-                    <input type="password" id="login-password" required placeholder="parol" autocomplete="current-password">
-                </div>
+                <div class="form-group"><label>Username</label><input type="text" id="login-username" required placeholder="username" autocomplete="username"></div>
+                <div class="form-group"><label>Parol</label><input type="password" id="login-password" required placeholder="parol" autocomplete="current-password"></div>
                 <button type="submit" class="btn-primary">Kirish</button>
             </form>
             <form id="register-form" class="auth-form" style="display:none;">
-                <div class="form-group">
-                    <label for="reg-username">Username</label>
-                    <input type="text" id="reg-username" required placeholder="kamida 3 belgi" autocomplete="username">
-                </div>
-                <div class="form-group">
-                    <label for="reg-password">Parol</label>
-                    <input type="password" id="reg-password" required placeholder="kamida 4 belgi" autocomplete="new-password">
-                </div>
+                <div class="form-group"><label>Username</label><input type="text" id="reg-username" required placeholder="kamida 3 belgi" autocomplete="username"></div>
+                <div class="form-group"><label>Parol</label><input type="password" id="reg-password" required placeholder="kamida 4 belgi" autocomplete="new-password"></div>
                 <button type="submit" class="btn-primary">Ro'yxatdan o'tish</button>
             </form>
             <div id="auth-error" class="auth-error"></div>
@@ -51,170 +39,263 @@
                     <button class="btn-logout" id="btn-logout">Chiqish</button>
                 </div>
             </div>
-            <nav>
+            <nav id="main-nav">
                 <button class="nav-btn active" data-page="words">So'zlar</button>
-                <button class="nav-btn" data-page="add">Yangi so'z</button>
+                <button class="nav-btn" data-page="add">Yangi</button>
+                <button class="nav-btn" data-page="review">Takrorlash</button>
+                <button class="nav-btn" data-page="quiz">Quiz</button>
                 <button class="nav-btn" data-page="practice">Mashq</button>
-                <button class="nav-btn admin-only" data-page="users" style="display:none;">Foydalanuvchilar</button>
+                <button class="nav-btn" data-page="challenge">Challenge</button>
+                <button class="nav-btn" data-page="reading">Reading</button>
+                <button class="nav-btn" data-page="writing">Writing</button>
+                <button class="nav-btn" data-page="mistakes">Xatolar</button>
+                <button class="nav-btn" data-page="stats">Statistika</button>
+                <button class="nav-btn" data-page="badges">Yutuqlar</button>
+                <button class="nav-btn admin-only" data-page="users" style="display:none;">Users</button>
             </nav>
         </header>
 
-        <!-- So'zlar ro'yxati -->
+        <!-- Word of the Day banner -->
+        <div id="wotd-banner" class="wotd-banner" style="display:none;">
+            <div class="wotd-label">Kunning so'zi</div>
+            <div class="wotd-word" id="wotd-word"></div>
+            <div class="wotd-uzbek" id="wotd-uzbek"></div>
+            <div class="wotd-extra" id="wotd-extra"></div>
+            <button class="btn-speak-small" id="wotd-speak">&#128266;</button>
+        </div>
+
+        <!-- So'zlar -->
         <section id="words-page" class="page active">
             <div class="filters-bar">
                 <input type="text" id="search-input" placeholder="So'z qidirish...">
                 <select id="filter-topic"><option value="">Barcha topiclar</option></select>
-                <select id="filter-tag">
-                    <option value="">Barcha taglar</option>
-                    <option value="speaking">Speaking</option>
-                    <option value="listening">Listening</option>
-                    <option value="reading">Reading</option>
-                    <option value="writing">Writing</option>
-                </select>
-                <select id="filter-sort">
-                    <option value="newest">Yangi qo'shilgan</option>
-                    <option value="oldest">Eski qo'shilgan</option>
-                    <option value="az">A → Z</option>
-                    <option value="za">Z → A</option>
-                    <option value="score_high">Baho: yuqoridan</option>
-                    <option value="score_low">Baho: pastdan</option>
-                </select>
+                <select id="filter-tag"><option value="">Barcha taglar</option><option value="speaking">Speaking</option><option value="listening">Listening</option><option value="reading">Reading</option><option value="writing">Writing</option></select>
+                <select id="filter-band"><option value="">Barcha bandlar</option><option value="5">Band 5</option><option value="6">Band 6</option><option value="7">Band 7</option><option value="8+">Band 8+</option></select>
+                <select id="filter-sort"><option value="newest">Yangi</option><option value="oldest">Eski</option><option value="az">A→Z</option><option value="za">Z→A</option><option value="score_high">Baho↓</option><option value="score_low">Baho↑</option></select>
+                <label class="fav-filter"><input type="checkbox" id="filter-favorites"> Sevimlilar</label>
                 <span class="word-count" id="word-count"></span>
             </div>
-            <div id="words-list" class="words-grid"></div>
-            <div id="empty-state" class="empty-state" style="display:none;">
-                <p>So'z topilmadi</p>
+            <div class="import-export-bar">
+                <button class="btn-small" id="btn-export">CSV Export</button>
+                <label class="btn-small btn-import-label">CSV Import<input type="file" id="csv-import" accept=".csv" style="display:none;"></label>
+                <button class="btn-small" id="btn-band-estimate">Band taxmin</button>
             </div>
+            <div id="words-list" class="words-grid"></div>
+            <div id="empty-state" class="empty-state" style="display:none;"><p>So'z topilmadi</p></div>
             <div id="pagination" class="pagination"></div>
         </section>
 
-        <!-- Yangi so'z qo'shish -->
+        <!-- Yangi so'z -->
         <section id="add-page" class="page">
             <form id="word-form">
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="english">Inglizcha so'z *</label>
-                        <input type="text" id="english" required placeholder="masalan: abundant" autocomplete="off">
-                        <div id="english-check" class="input-hint"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="uzbek">O'zbekcha tarjima *</label>
-                        <input type="text" id="uzbek" required placeholder="masalan: mo'l-ko'l, serob">
-                    </div>
+                    <div class="form-group"><label>Inglizcha *</label><input type="text" id="english" required placeholder="abundant" autocomplete="off"><div id="english-check" class="input-hint"></div></div>
+                    <div class="form-group"><label>O'zbekcha *</label><input type="text" id="uzbek" required placeholder="mo'l-ko'l"></div>
                 </div>
-                <div class="form-group">
-                    <label for="synonyms">Sinonimlar</label>
-                    <input type="text" id="synonyms" placeholder="masalan: plentiful, ample, copious">
-                </div>
-                <div class="form-group">
-                    <label for="example">Misol jumla</label>
-                    <textarea id="example" rows="3" placeholder="masalan: The region has abundant natural resources."></textarea>
-                </div>
+                <div class="form-group"><label>Sinonimlar</label><input type="text" id="synonyms" placeholder="plentiful, ample, copious"></div>
+                <div class="form-group"><label>Misol jumla</label><textarea id="example" rows="2" placeholder="The region has abundant natural resources."></textarea></div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label for="topic">Topic</label>
-                        <input type="text" id="topic" placeholder="masalan: Education" list="topic-list">
-                        <datalist id="topic-list"></datalist>
-                    </div>
-                    <div class="form-group">
-                        <label>IELTS Skills (taglar)</label>
-                        <div class="tags-checkboxes">
-                            <label class="tag-check"><input type="checkbox" name="tags" value="speaking"> Speaking</label>
-                            <label class="tag-check"><input type="checkbox" name="tags" value="listening"> Listening</label>
-                            <label class="tag-check"><input type="checkbox" name="tags" value="reading"> Reading</label>
-                            <label class="tag-check"><input type="checkbox" name="tags" value="writing"> Writing</label>
-                        </div>
+                    <div class="form-group"><label>Topic</label><input type="text" id="topic" placeholder="Education" list="topic-list"><datalist id="topic-list"></datalist></div>
+                    <div class="form-group"><label>Band</label><select id="band"><option value="">-</option><option value="5">Band 5</option><option value="6">Band 6</option><option value="7">Band 7</option><option value="8+">Band 8+</option></select></div>
+                </div>
+                <div class="form-group"><label>So'z shakllari</label><input type="text" id="word_forms" placeholder="succeed (v), success (n), successful (adj)"></div>
+                <div class="form-group"><label>Collocations</label><input type="text" id="collocations" placeholder="make a decision, take action"></div>
+                <div class="form-group"><label>IELTS Skills</label>
+                    <div class="tags-checkboxes">
+                        <label class="tag-check"><input type="checkbox" name="tags" value="speaking"> Speaking</label>
+                        <label class="tag-check"><input type="checkbox" name="tags" value="listening"> Listening</label>
+                        <label class="tag-check"><input type="checkbox" name="tags" value="reading"> Reading</label>
+                        <label class="tag-check"><input type="checkbox" name="tags" value="writing"> Writing</label>
                     </div>
                 </div>
                 <button type="submit" class="btn-primary">Saqlash</button>
             </form>
         </section>
 
-        <!-- Mashq rejimi -->
+        <!-- Review (Spaced Repetition) -->
+        <section id="review-page" class="page">
+            <div id="review-empty" class="empty-state"><p>Bugun takrorlash uchun so'z yo'q</p></div>
+            <div id="review-area" class="practice-area" style="display:none;">
+                <div class="practice-header"><span id="review-progress"></span><span id="review-due-count" class="due-badge"></span></div>
+                <div class="flashcard" id="review-flashcard">
+                    <div class="flashcard-inner" id="review-flashcard-inner">
+                        <div class="flashcard-front"><p class="card-word" id="review-front-word"></p><button class="btn-speak" id="review-speak-btn" onclick="speakWord(this.dataset.word);event.stopPropagation();">&#128266;</button><span class="card-hint">Kartani bosing</span></div>
+                        <div class="flashcard-back"><p class="card-word" id="review-back-word"></p><p class="card-synonyms" id="review-synonyms"></p><p class="card-example" id="review-example"></p><p class="card-extra" id="review-collocations"></p><p class="card-extra" id="review-word-forms"></p></div>
+                    </div>
+                </div>
+                <div class="review-quality-btns">
+                    <button class="btn-q btn-q-fail" onclick="submitReview(1)">Bilmadim</button>
+                    <button class="btn-q btn-q-hard" onclick="submitReview(3)">Qiyin</button>
+                    <button class="btn-q btn-q-good" onclick="submitReview(4)">Yaxshi</button>
+                    <button class="btn-q btn-q-easy" onclick="submitReview(5)">Oson</button>
+                </div>
+            </div>
+            <div id="review-done" class="practice-done" style="display:none;"><h2>Takrorlash tugadi!</h2><p id="review-result"></p><button class="btn-primary" onclick="initReview()" style="max-width:300px;margin:0 auto;">Yana</button></div>
+        </section>
+
+        <!-- Quiz -->
+        <section id="quiz-page" class="page">
+            <div id="quiz-setup" class="quiz-setup">
+                <h2>Quiz</h2>
+                <div class="form-row">
+                    <div class="form-group"><label>Rejim</label><select id="quiz-mode">
+                        <option value="multiple_choice">Multiple Choice</option>
+                        <option value="reverse">Teskari (UZ→EN)</option>
+                        <option value="spelling">Spelling</option>
+                        <option value="fill_blank">Fill in the Blank</option>
+                        <option value="collocation">Collocation Match</option>
+                    </select></div>
+                    <div class="form-group"><label>Savollar</label><select id="quiz-count"><option value="5">5</option><option value="10" selected>10</option><option value="20">20</option></select></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Band</label><select id="quiz-band"><option value="">Barchasi</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8+">8+</option></select></div>
+                    <div class="form-group"><label>Topic</label><select id="quiz-topic"><option value="">Barchasi</option></select></div>
+                </div>
+                <button class="btn-primary" id="btn-start-quiz">Boshlash</button>
+            </div>
+            <div id="quiz-area" style="display:none;">
+                <div class="quiz-header"><span id="quiz-progress"></span><span id="quiz-score-display"></span></div>
+                <div id="quiz-question-area" class="quiz-question-area"></div>
+                <div id="quiz-feedback" class="quiz-feedback" style="display:none;"></div>
+                <button id="quiz-next-btn" class="btn-primary" style="display:none;max-width:300px;margin:12px auto 0;">Keyingi</button>
+            </div>
+            <div id="quiz-result" class="practice-done" style="display:none;"><h2>Quiz tugadi!</h2><p id="quiz-result-text"></p><div id="quiz-result-details"></div><button class="btn-primary" onclick="showQuizSetup()" style="max-width:300px;margin:16px auto 0;">Yangi quiz</button></div>
+        </section>
+
+        <!-- Mock Test -->
+        <section id="mocktest-page" class="page">
+            <!-- embedded in quiz as a mode option -->
+        </section>
+
+        <!-- Practice -->
         <section id="practice-page" class="page">
-            <div id="practice-empty" class="empty-state">
-                <p>Mashq qilish uchun kamida 1 ta so'z qo'shing</p>
-            </div>
+            <div id="practice-empty" class="empty-state"><p>Kamida 1 ta so'z qo'shing</p></div>
             <div id="practice-area" class="practice-area" style="display:none;">
-                <div class="practice-header">
-                    <span id="practice-progress"></span>
-                    <div class="practice-modes">
-                        <button class="mode-btn active" data-mode="en-uz">EN → UZ</button>
-                        <button class="mode-btn" data-mode="uz-en">UZ → EN</button>
-                    </div>
-                </div>
-                <div class="flashcard" id="flashcard">
-                    <div class="flashcard-inner" id="flashcard-inner">
-                        <div class="flashcard-front">
-                            <p class="card-word" id="card-front-word"></p>
-                            <span class="card-hint">Kartani bosing</span>
-                        </div>
-                        <div class="flashcard-back">
-                            <p class="card-word" id="card-back-word"></p>
-                            <p class="card-synonyms" id="card-synonyms"></p>
-                            <p class="card-example" id="card-example"></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="practice-actions">
-                    <button class="btn-know" id="btn-know">Bildim</button>
-                    <button class="btn-dont-know" id="btn-dont-know">Bilmadim</button>
-                </div>
-                <button class="btn-restart" id="btn-restart">Qaytadan boshlash</button>
+                <div class="practice-header"><span id="practice-progress"></span><div class="practice-modes"><button class="mode-btn active" data-mode="en-uz">EN→UZ</button><button class="mode-btn" data-mode="uz-en">UZ→EN</button></div></div>
+                <div class="flashcard" id="flashcard"><div class="flashcard-inner" id="flashcard-inner">
+                    <div class="flashcard-front"><p class="card-word" id="card-front-word"></p><button class="btn-speak" id="practice-speak-btn" onclick="speakWord(this.dataset.word);event.stopPropagation();">&#128266;</button><span class="card-hint">Kartani bosing</span></div>
+                    <div class="flashcard-back"><p class="card-word" id="card-back-word"></p><p class="card-synonyms" id="card-synonyms"></p><p class="card-example" id="card-example"></p></div>
+                </div></div>
+                <div class="practice-actions"><button class="btn-know" id="btn-know">Bildim</button><button class="btn-dont-know" id="btn-dont-know">Bilmadim</button></div>
+                <button class="btn-restart" id="btn-restart">Qaytadan</button>
             </div>
-            <div id="practice-done" class="practice-done" style="display:none;">
-                <h2>Mashq tugadi!</h2>
-                <p id="practice-result"></p>
-                <button class="btn-primary" id="btn-practice-again">Qaytadan mashq</button>
+            <div id="practice-done" class="practice-done" style="display:none;"><h2>Mashq tugadi!</h2><p id="practice-result"></p><button class="btn-primary" id="btn-practice-again">Qaytadan</button></div>
+        </section>
+
+        <!-- Challenge -->
+        <section id="challenge-page" class="page">
+            <div id="challenge-content"></div>
+        </section>
+
+        <!-- Reading -->
+        <section id="reading-page" class="page">
+            <div id="reading-list"></div>
+            <div id="reading-detail" style="display:none;"></div>
+            <div class="admin-only" id="add-passage-section" style="display:none;margin-top:24px;">
+                <h3 style="color:#60a5fa;margin-bottom:12px;">Yangi passage qo'shish</h3>
+                <form id="passage-form">
+                    <div class="form-group"><label>Sarlavha</label><input type="text" id="p-title" required></div>
+                    <div class="form-group"><label>Matn</label><textarea id="p-content" rows="8" required placeholder="IELTS uslubidagi passage matni..."></textarea></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Topic</label><input type="text" id="p-topic"></div>
+                        <div class="form-group"><label>Qiyinlik</label><select id="p-difficulty"><option value="easy">Oson</option><option value="medium" selected>O'rta</option><option value="hard">Qiyin</option></select></div>
+                    </div>
+                    <div class="form-group"><label>Savollar (JSON)</label><textarea id="p-questions" rows="4" placeholder='[{"question":"...","options":["a","b","c","d"],"correct":"a"}]'></textarea></div>
+                    <button type="submit" class="btn-primary">Saqlash</button>
+                </form>
             </div>
         </section>
 
-        <!-- Foydalanuvchilar (admin) -->
+        <!-- Writing Practice -->
+        <section id="writing-page" class="page">
+            <div id="writing-content" class="writing-area">
+                <div id="writing-prompt" class="writing-prompt"></div>
+                <textarea id="writing-input" rows="10" placeholder="Bu yerga yozing..." class="writing-textarea"></textarea>
+                <div class="writing-actions">
+                    <button class="btn-primary" id="btn-new-prompt" style="max-width:250px;">Yangi topshiriq</button>
+                    <div class="writing-stats">
+                        <span id="writing-word-count">0 so'z</span>
+                        <span id="writing-match-count">0 ta mos so'z</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mistakes -->
+        <section id="mistakes-page" class="page">
+            <h2 style="color:#f87171;margin-bottom:16px;">Ko'p xato qilingan so'zlar</h2>
+            <div id="mistakes-list"></div>
+        </section>
+
+        <!-- Stats -->
+        <section id="stats-page" class="page">
+            <div class="stats-grid">
+                <div class="stat-card stat-total"><div class="stat-number" id="stat-total">0</div><div class="stat-label">Jami</div></div>
+                <div class="stat-card stat-learned"><div class="stat-number" id="stat-learned">0</div><div class="stat-label">O'rgangan</div></div>
+                <div class="stat-card stat-learning"><div class="stat-number" id="stat-learning">0</div><div class="stat-label">O'rganmoqda</div></div>
+                <div class="stat-card stat-new"><div class="stat-number" id="stat-new">0</div><div class="stat-label">Yangi</div></div>
+                <div class="stat-card stat-due"><div class="stat-number" id="stat-due">0</div><div class="stat-label">Takrorlash</div></div>
+                <div class="stat-card stat-streak"><div class="stat-number" id="stat-streak">0</div><div class="stat-label">Streak</div></div>
+            </div>
+            <div id="band-estimate-card" class="band-estimate-card"></div>
+            <div class="stats-charts">
+                <div class="chart-card"><h3>Haftalik aktivlik</h3><div id="chart-activity" class="bar-chart"></div></div>
+                <div class="chart-card"><h3>Score taqsimoti</h3><div id="chart-scores" class="bar-chart"></div></div>
+                <div class="chart-card"><h3>Band taqsimoti</h3><div id="chart-bands" class="bar-chart"></div></div>
+                <div class="chart-card"><h3>IELTS Skills</h3><div id="chart-tags" class="bar-chart"></div></div>
+            </div>
+        </section>
+
+        <!-- Badges -->
+        <section id="badges-page" class="page">
+            <h2 style="color:#f59e0b;margin-bottom:16px;">Yutuqlar</h2>
+            <div id="badges-grid" class="badges-grid"></div>
+        </section>
+
+        <!-- Users (admin) -->
         <section id="users-page" class="page">
             <h2 style="color:#60a5fa;margin-bottom:16px;">Foydalanuvchilar</h2>
             <div id="users-list" class="users-table-wrap"></div>
         </section>
 
-        <!-- Tahrirlash modal -->
+        <!-- Edit modal -->
         <div id="edit-modal" class="modal" style="display:none;">
             <div class="modal-content">
                 <h2>So'zni tahrirlash</h2>
                 <form id="edit-form">
                     <input type="hidden" id="edit-id">
-                    <div class="form-group">
-                        <label for="edit-english">Inglizcha so'z *</label>
-                        <input type="text" id="edit-english" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-uzbek">O'zbekcha tarjima *</label>
-                        <input type="text" id="edit-uzbek" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-synonyms">Sinonimlar</label>
-                        <input type="text" id="edit-synonyms">
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-example">Misol jumla</label>
-                        <textarea id="edit-example" rows="3"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-topic">Topic</label>
-                        <input type="text" id="edit-topic" list="topic-list">
-                    </div>
-                    <div class="form-group">
-                        <label>IELTS Skills (taglar)</label>
-                        <div class="tags-checkboxes" id="edit-tags-container">
-                            <label class="tag-check"><input type="checkbox" name="edit-tags" value="speaking"> Speaking</label>
-                            <label class="tag-check"><input type="checkbox" name="edit-tags" value="listening"> Listening</label>
-                            <label class="tag-check"><input type="checkbox" name="edit-tags" value="reading"> Reading</label>
-                            <label class="tag-check"><input type="checkbox" name="edit-tags" value="writing"> Writing</label>
-                        </div>
-                    </div>
-                    <div class="modal-actions">
-                        <button type="button" class="btn-cancel" id="btn-cancel-edit">Bekor qilish</button>
-                        <button type="submit" class="btn-primary">Saqlash</button>
-                    </div>
+                    <div class="form-group"><label>Inglizcha *</label><input type="text" id="edit-english" required></div>
+                    <div class="form-group"><label>O'zbekcha *</label><input type="text" id="edit-uzbek" required></div>
+                    <div class="form-group"><label>Sinonimlar</label><input type="text" id="edit-synonyms"></div>
+                    <div class="form-group"><label>Misol</label><textarea id="edit-example" rows="2"></textarea></div>
+                    <div class="form-row"><div class="form-group"><label>Topic</label><input type="text" id="edit-topic" list="topic-list"></div><div class="form-group"><label>Band</label><select id="edit-band"><option value="">-</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8+">8+</option></select></div></div>
+                    <div class="form-group"><label>So'z shakllari</label><input type="text" id="edit-word_forms"></div>
+                    <div class="form-group"><label>Collocations</label><input type="text" id="edit-collocations"></div>
+                    <div class="form-group"><label>IELTS Skills</label><div class="tags-checkboxes" id="edit-tags-container"><label class="tag-check"><input type="checkbox" name="edit-tags" value="speaking"> Speaking</label><label class="tag-check"><input type="checkbox" name="edit-tags" value="listening"> Listening</label><label class="tag-check"><input type="checkbox" name="edit-tags" value="reading"> Reading</label><label class="tag-check"><input type="checkbox" name="edit-tags" value="writing"> Writing</label></div></div>
+                    <div class="modal-actions"><button type="button" class="btn-cancel" id="btn-cancel-edit">Bekor</button><button type="submit" class="btn-primary">Saqlash</button></div>
                 </form>
+            </div>
+        </div>
+
+        <!-- Notes modal -->
+        <div id="notes-modal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <h2>Shaxsiy eslatma</h2>
+                <form id="notes-form">
+                    <input type="hidden" id="note-word-id">
+                    <div class="form-group"><label>Eslatma</label><textarea id="note-text" rows="3" placeholder="O'zingiz uchun izoh..."></textarea></div>
+                    <div class="form-group"><label>Esda saqlash usuli (mnemonic)</label><input type="text" id="note-mnemonic" placeholder="Masalan: ABUNDant = A BUN dance (non bilan raqsga tushish = mo'l-ko'l)"></div>
+                    <div class="modal-actions"><button type="button" class="btn-cancel" onclick="document.getElementById('notes-modal').style.display='none'">Bekor</button><button type="submit" class="btn-primary">Saqlash</button></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Band estimate modal -->
+        <div id="band-modal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <h2>Band Score Taxmin</h2>
+                <div id="band-modal-content"></div>
+                <button class="btn-cancel" onclick="document.getElementById('band-modal').style.display='none'" style="width:100%;margin-top:16px;">Yopish</button>
             </div>
         </div>
     </div>

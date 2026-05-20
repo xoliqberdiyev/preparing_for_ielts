@@ -6,7 +6,8 @@
       "Bash(pkill -f \"node server.js\")",
       "Bash(node:*)",
       "Bash(npx turso:*)",
-      "Bash(npx vercel:*)"
+      "Bash(npx vercel:*)",
+      "WebSearch"
     ]
   }
 }
