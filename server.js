@@ -4,7 +4,7 @@ const initSqlJs = require('sql.js');
 const fs = require('fs');
 
 const app = express();
-const PORT = 3000;
+const PORT = parseInt(process.env.PORT) || 3000;
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'words.db');
 
 app.use(express.json());
@@ -192,7 +192,7 @@ app.patch('/api/words/:id/score', (req, res) => {
 });
 
 initDb().then(() => {
-    app.listen(PORT, () => {
-        console.log(`Server ishga tushdi: http://localhost:${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+        console.log(`Server ishga tushdi: http://0.0.0.0:${PORT}`);
     });
 });
