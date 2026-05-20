@@ -2,7 +2,7 @@ services:
   app:
     build: .
     ports:
-      - "4000:80"
+      - "4000:4000"
     volumes:
       - ielts-data:/app/data
     restart: unless-stopped
