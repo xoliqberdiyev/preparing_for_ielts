@@ -11,8 +11,8 @@ COPY public ./public
 VOLUME /app/data
 
 ENV DB_PATH=/app/data/words.db
-ENV PORT=3000
+ENV PORT=4000
 
-EXPOSE 3000
+EXPOSE 4000
 
 CMD ["node", "server.js"]
