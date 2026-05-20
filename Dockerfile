@@ -1,0 +1,18 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+RUN npm ci --omit=dev
+
+COPY server.js ./
+COPY public ./public
+
+VOLUME /app/data
+
+ENV DB_PATH=/app/data/words.db
+ENV PORT=3000
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]

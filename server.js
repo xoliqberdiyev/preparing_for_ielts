@@ -5,7 +5,7 @@ const fs = require('fs');
 
 const app = express();
 const PORT = 3000;
-const DB_PATH = path.join(__dirname, 'words.db');
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'words.db');
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
