@@ -1,5 +1,4 @@
 node_modules
-words.db
 seed*.js
 migrate_tags.js
 .git
