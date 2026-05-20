@@ -1,3 +1,109 @@
+// Auth State
+let authToken = localStorage.getItem('auth_token') || null;
+let currentUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+
+function getAuthHeaders() {
+    const headers = { 'Content-Type': 'application/json' };
+    if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+    return headers;
+}
+
+function isAdmin() {
+    return currentUser && currentUser.role === 'admin';
+}
+
+function showAuthPage() {
+    document.getElementById('auth-page').style.display = 'flex';
+    document.getElementById('main-app').style.display = 'none';
+}
+
+function showMainApp() {
+    document.getElementById('auth-page').style.display = 'none';
+    document.getElementById('main-app').style.display = 'block';
+    document.getElementById('user-display').textContent = currentUser.username + (isAdmin() ? ' (admin)' : '');
+    // Admin-only elementlarni ko'rsatish/yashirish
+    document.querySelectorAll('.admin-only').forEach(el => {
+        el.style.display = isAdmin() ? '' : 'none';
+    });
+    loadTopics();
+    loadWords(1);
+}
+
+function logout() {
+    authToken = null;
+    currentUser = null;
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
+    showAuthPage();
+}
+
+// Auth tabs
+document.querySelectorAll('.auth-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const isLogin = tab.dataset.tab === 'login';
+        document.getElementById('login-form').style.display = isLogin ? 'block' : 'none';
+        document.getElementById('register-form').style.display = isLogin ? 'none' : 'block';
+        document.getElementById('auth-error').textContent = '';
+    });
+});
+
+// Login
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errEl = document.getElementById('auth-error');
+    errEl.textContent = '';
+    try {
+        const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: document.getElementById('login-username').value.trim(),
+                password: document.getElementById('login-password').value
+            })
+        });
+        const data = await res.json();
+        if (!res.ok) { errEl.textContent = data.error; return; }
+        authToken = data.token;
+        currentUser = data.user;
+        localStorage.setItem('auth_token', authToken);
+        localStorage.setItem('auth_user', JSON.stringify(currentUser));
+        showMainApp();
+    } catch (err) {
+        errEl.textContent = 'Xatolik yuz berdi';
+    }
+});
+
+// Register
+document.getElementById('register-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errEl = document.getElementById('auth-error');
+    errEl.textContent = '';
+    try {
+        const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: document.getElementById('reg-username').value.trim(),
+                password: document.getElementById('reg-password').value
+            })
+        });
+        const data = await res.json();
+        if (!res.ok) { errEl.textContent = data.error; return; }
+        authToken = data.token;
+        currentUser = data.user;
+        localStorage.setItem('auth_token', authToken);
+        localStorage.setItem('auth_user', JSON.stringify(currentUser));
+        showMainApp();
+    } catch (err) {
+        errEl.textContent = 'Xatolik yuz berdi';
+    }
+});
+
+// Logout
+document.getElementById('btn-logout').addEventListener('click', logout);
+
 // State
 let cachedWords = [];
 let currentPage = 1;
@@ -56,7 +162,10 @@ async function updateWordApi(id, word) {
 }
 
 async function removeWordApi(id) {
-    await fetch('/api/words/' + id, { method: 'DELETE' });
+    await fetch('/api/words/' + id, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    });
 }
 
 async function updateScoreApi(id, delta) {
@@ -94,6 +203,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
         document.getElementById(page + '-page').classList.add('active');
         if (page === 'words') loadWords(1);
         if (page === 'practice') initPractice();
+        if (page === 'users') loadUsers();
     });
 });
 
@@ -131,7 +241,7 @@ function renderWordCard(w) {
                 <span class="word-english">${escapeHtml(w.english)}</span>
                 <div class="word-card-actions">
                     <button class="btn-edit" onclick="openEdit(${w.id})">tahrir</button>
-                    <button class="btn-delete" onclick="deleteWord(${w.id})">o'chirish</button>
+                    ${isAdmin() ? `<button class="btn-delete" onclick="deleteWord(${w.id})">o'chirish</button>` : ''}
                 </div>
             </div>
             <div class="word-uzbek">${escapeHtml(w.uzbek)}</div>
@@ -401,6 +511,74 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
     });
 });
 
-// Init
-loadTopics();
-loadWords(1);
+// Users management (admin only)
+async function loadUsers() {
+    if (!isAdmin()) return;
+    try {
+        const res = await fetch('/api/users', { headers: getAuthHeaders() });
+        if (!res.ok) return;
+        const users = await res.json();
+        const container = document.getElementById('users-list');
+        container.innerHTML = `
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Ro'yxatdan o'tgan</th>
+                        <th>Amal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${users.map(u => `
+                        <tr>
+                            <td>${u.id}</td>
+                            <td>${escapeHtml(u.username)}</td>
+                            <td><span class="role-badge role-${u.role}">${u.role}</span></td>
+                            <td>${u.created_at || ''}</td>
+                            <td>
+                                ${u.id !== currentUser.id ? `
+                                    <select onchange="changeRole(${u.id}, this.value)" class="role-select">
+                                        <option value="user" ${u.role === 'user' ? 'selected' : ''}>user</option>
+                                        <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>admin</option>
+                                    </select>
+                                ` : '<span style="color:#475569">siz</span>'}
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>`;
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function changeRole(userId, newRole) {
+    try {
+        const res = await fetch('/api/users/' + userId + '/role', {
+            method: 'PATCH',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ role: newRole })
+        });
+        const data = await res.json();
+        if (!res.ok) { showToast(data.error, true); loadUsers(); return; }
+        showToast('Role o\'zgartirildi!');
+        loadUsers();
+    } catch (e) {
+        showToast('Xatolik yuz berdi', true);
+    }
+}
+
+// Init - auth tekshiruvi
+if (authToken && currentUser) {
+    // Token yaroqliligini tekshirish
+    fetch('/api/auth/me', { headers: getAuthHeaders() })
+        .then(res => {
+            if (res.ok) { showMainApp(); }
+            else { logout(); }
+        })
+        .catch(() => logout());
+} else {
+    showAuthPage();
+}

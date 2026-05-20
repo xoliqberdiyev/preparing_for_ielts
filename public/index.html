@@ -7,13 +7,55 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app">
+    <!-- Auth sahifasi -->
+    <div id="auth-page" class="auth-page">
+        <div class="auth-container">
+            <h1 class="auth-title">IELTS So'z Yodlash</h1>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Kirish</button>
+                <button class="auth-tab" data-tab="register">Ro'yxatdan o'tish</button>
+            </div>
+            <form id="login-form" class="auth-form">
+                <div class="form-group">
+                    <label for="login-username">Username</label>
+                    <input type="text" id="login-username" required placeholder="username" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Parol</label>
+                    <input type="password" id="login-password" required placeholder="parol" autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn-primary">Kirish</button>
+            </form>
+            <form id="register-form" class="auth-form" style="display:none;">
+                <div class="form-group">
+                    <label for="reg-username">Username</label>
+                    <input type="text" id="reg-username" required placeholder="kamida 3 belgi" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Parol</label>
+                    <input type="password" id="reg-password" required placeholder="kamida 4 belgi" autocomplete="new-password">
+                </div>
+                <button type="submit" class="btn-primary">Ro'yxatdan o'tish</button>
+            </form>
+            <div id="auth-error" class="auth-error"></div>
+            <p class="auth-hint">Birinchi ro'yxatdan o'tgan foydalanuvchi admin bo'ladi</p>
+        </div>
+    </div>
+
+    <div class="app" id="main-app" style="display:none;">
         <header>
-            <h1>IELTS So'z Yodlash</h1>
+            <div class="header-top">
+                <h1>IELTS So'z Yodlash</h1>
+                <div class="user-info">
+                    <span id="user-display"></span>
+                    <button class="btn-logout" id="btn-logout">Chiqish</button>
+                </div>
+            </div>
             <nav>
                 <button class="nav-btn active" data-page="words">So'zlar</button>
                 <button class="nav-btn" data-page="add">Yangi so'z</button>
                 <button class="nav-btn" data-page="practice">Mashq</button>
+                <button class="nav-btn admin-only" data-page="users" style="display:none;">Foydalanuvchilar</button>
             </nav>
         </header>
 
@@ -125,6 +167,12 @@
                 <p id="practice-result"></p>
                 <button class="btn-primary" id="btn-practice-again">Qaytadan mashq</button>
             </div>
+        </section>
+
+        <!-- Foydalanuvchilar (admin) -->
+        <section id="users-page" class="page">
+            <h2 style="color:#60a5fa;margin-bottom:16px;">Foydalanuvchilar</h2>
+            <div id="users-list" class="users-table-wrap"></div>
         </section>
 
         <!-- Tahrirlash modal -->
